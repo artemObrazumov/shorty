@@ -1,18 +1,13 @@
 package com.artemobrazumov.shorty.short_url.service;
 
 import com.artemObrazumov.token.entity.UserEntity;
-import com.artemObrazumov.token.exceptions.DuplicateShortUrlException;
-import com.artemObrazumov.token.user.TokenUser;
+import com.artemobrazumov.shorty.short_url.exceptions.DuplicateShortUrlException;
 import com.artemobrazumov.shorty.short_url.dto.ShortUrlDTO;
 import com.artemobrazumov.shorty.short_url.dto.ShortUrlResponseDTO;
 import com.artemobrazumov.shorty.short_url.entity.ShortUrl;
 import com.artemobrazumov.shorty.short_url.factory.ShortUrlStringGenerator;
 import com.artemobrazumov.shorty.short_url.repository.ShortUrlRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
 
 @Service
 public class ShortUrlService {
