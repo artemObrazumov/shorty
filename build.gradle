@@ -20,7 +20,7 @@ repositories {
 dependencies {
 
 	// JWT tokens
-	implementation files('token.jar')
+	implementation project(':token')
 	implementation 'com.nimbusds:nimbus-jose-jwt:9.37.2'
 
 	// Spring boot starters
