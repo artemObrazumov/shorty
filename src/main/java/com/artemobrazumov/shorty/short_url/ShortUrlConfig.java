@@ -1,8 +1,10 @@
 package com.artemobrazumov.shorty.short_url;
 
 import com.artemobrazumov.shorty.short_url.factory.ShortUrlStringGenerator;
+import com.artemobrazumov.shorty.short_url.service.ShortUrlService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
@@ -15,5 +17,12 @@ public class ShortUrlConfig {
     @Bean
     public ShortUrlStringGenerator urlStringGenerator() {
         return new ShortUrlStringGenerator(length);
+    }
+
+    @Bean
+    public ShortUrlConfigurer shortUrlConfigurer(
+            ShortUrlService shortUrlService
+    ) {
+        return new ShortUrlConfigurer(shortUrlService);
     }
 }

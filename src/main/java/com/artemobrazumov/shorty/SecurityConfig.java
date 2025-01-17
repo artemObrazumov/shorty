@@ -1,6 +1,7 @@
 package com.artemobrazumov.shorty;
 
 import com.artemObrazumov.token.JWTAuthConfigurer;
+import com.artemobrazumov.shorty.short_url.ShortUrlConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -13,9 +14,11 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
-                                                   JWTAuthConfigurer jwtAuthConfigurer) throws Exception {
+                                                   JWTAuthConfigurer jwtAuthConfigurer,
+                                                   ShortUrlConfigurer shortUrlConfigurer) throws Exception {
         return http
                 .with(jwtAuthConfigurer, Customizer.withDefaults())
+                .with(shortUrlConfigurer, Customizer.withDefaults())
                 .httpBasic(Customizer.withDefaults())
                 .sessionManagement(sessionManagement ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

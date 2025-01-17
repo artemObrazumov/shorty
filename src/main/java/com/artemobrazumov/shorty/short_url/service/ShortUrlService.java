@@ -5,6 +5,7 @@ import com.artemobrazumov.shorty.short_url.exceptions.DuplicateShortUrlException
 import com.artemobrazumov.shorty.short_url.dto.ShortUrlDTO;
 import com.artemobrazumov.shorty.short_url.dto.ShortUrlResponseDTO;
 import com.artemobrazumov.shorty.short_url.entity.ShortUrl;
+import com.artemobrazumov.shorty.short_url.exceptions.ShortUrlNotFoundException;
 import com.artemobrazumov.shorty.short_url.factory.ShortUrlStringGenerator;
 import com.artemobrazumov.shorty.short_url.repository.ShortUrlRepository;
 import org.springframework.stereotype.Service;
@@ -30,8 +31,15 @@ public class ShortUrlService {
         if (shortUrlRepository.existsByShortUrl(shortUrlString)) {
             throw new DuplicateShortUrlException(shortUrlString);
         }
-        ShortUrl shortUrl = new ShortUrl(null, new UserEntity(userId), shortUrlDTO.url(), shortUrlString);
+        ShortUrl shortUrl = new ShortUrl(null, new UserEntity(userId), shortUrlDTO.url(), shortUrlString,
+                shortUrlDTO.password());
         shortUrl = shortUrlRepository.save(shortUrl);
-        return new ShortUrlResponseDTO(shortUrl.getId(), shortUrl.getAuthor().getId(), shortUrl.getRealUrl(), shortUrl.getShortUrl());
+        return new ShortUrlResponseDTO(shortUrl.getId(), shortUrl.getAuthor().getId(), shortUrl.getRealUrl(),
+                shortUrl.getShortUrl());
+    }
+
+    public ShortUrl getShortUrl(String shortUrlString) {
+        return shortUrlRepository.findByShortUrl(shortUrlString).orElseThrow(() ->
+                new ShortUrlNotFoundException(shortUrlString));
     }
 }

@@ -21,14 +21,18 @@ public class ShortUrl {
     @Column(name = "short_url", nullable = false, unique = true)
     private String shortUrl;
 
+    @Column(name = "password")
+    private String password;
+
     public ShortUrl() {
     }
 
-    public ShortUrl(Long id, UserEntity author, String realUrl, String shortUrl) {
+    public ShortUrl(Long id, UserEntity author, String realUrl, String shortUrl, String password) {
         this.id = id;
         this.author = author;
         this.realUrl = realUrl;
         this.shortUrl = shortUrl;
+        this.password = password;
     }
 
     public Long getId() {
@@ -61,5 +65,13 @@ public class ShortUrl {
 
     public void setShortUrl(String shortUrl) {
         this.shortUrl = shortUrl;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }
