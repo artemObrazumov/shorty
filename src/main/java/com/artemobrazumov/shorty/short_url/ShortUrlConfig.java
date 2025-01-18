@@ -1,6 +1,7 @@
 package com.artemobrazumov.shorty.short_url;
 
 import com.artemobrazumov.shorty.short_url.factory.ShortUrlStringGenerator;
+import com.artemobrazumov.shorty.short_url.service.RedirectionService;
 import com.artemobrazumov.shorty.short_url.service.ShortUrlService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -21,8 +22,8 @@ public class ShortUrlConfig {
 
     @Bean
     public ShortUrlConfigurer shortUrlConfigurer(
-            ShortUrlService shortUrlService
+            ShortUrlService shortUrlService, RedirectionService redirectionService
     ) {
-        return new ShortUrlConfigurer(shortUrlService);
+        return new ShortUrlConfigurer(shortUrlService, redirectionService);
     }
 }

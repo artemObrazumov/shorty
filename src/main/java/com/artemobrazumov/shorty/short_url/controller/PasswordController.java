@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class PasswordController {
@@ -16,8 +17,10 @@ public class PasswordController {
     }
 
     @GetMapping("/{shortUrl}/password")
-    public String shortUrlPassword(@PathVariable("shortUrl") String shortUrlString, Model model) {
+    public String shortUrlPassword(@PathVariable("shortUrl") String shortUrlString,
+                                   @RequestParam(name = "r_id") Long redirectionId, Model model) {
         model.addAttribute("shortUrl", shortUrlString);
+        model.addAttribute("r_id", redirectionId);
         return "password";
     }
 }
