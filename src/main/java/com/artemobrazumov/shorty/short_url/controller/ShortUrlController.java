@@ -1,9 +1,7 @@
 package com.artemobrazumov.shorty.short_url.controller;
 
 import com.artemObrazumov.token.user.TokenUser;
-import com.artemobrazumov.shorty.short_url.dto.ShortUrlDTO;
-import com.artemobrazumov.shorty.short_url.dto.ShortUrlDetailsDTO;
-import com.artemobrazumov.shorty.short_url.dto.ShortUrlResponseDTO;
+import com.artemobrazumov.shorty.short_url.dto.*;
 import com.artemobrazumov.shorty.short_url.service.ShortUrlService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +22,12 @@ public class ShortUrlController {
     public ShortUrlDetailsDTO getShortUrlDetails(@AuthenticationPrincipal TokenUser user,
                                                  @PathVariable("id") Long id) {
         return shortUrlService.getShortUrlDetails(user, id);
+    }
+
+    @GetMapping("/{id}/redirections")
+    public RedirectionsDTO getShortUrlRedirections(@AuthenticationPrincipal TokenUser user,
+                                                   @PathVariable("id") Long id) {
+        return shortUrlService.getShortUrlRedirections(user, id);
     }
 
     @PostMapping

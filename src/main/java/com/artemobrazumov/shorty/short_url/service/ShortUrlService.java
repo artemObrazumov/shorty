@@ -2,27 +2,31 @@ package com.artemobrazumov.shorty.short_url.service;
 
 import com.artemObrazumov.token.entity.UserEntity;
 import com.artemObrazumov.token.user.TokenUser;
-import com.artemobrazumov.shorty.short_url.dto.ShortUrlDetailsDTO;
+import com.artemobrazumov.shorty.short_url.dto.*;
+import com.artemobrazumov.shorty.short_url.entity.Redirection;
 import com.artemobrazumov.shorty.short_url.exceptions.DuplicateShortUrlException;
-import com.artemobrazumov.shorty.short_url.dto.ShortUrlDTO;
-import com.artemobrazumov.shorty.short_url.dto.ShortUrlResponseDTO;
 import com.artemobrazumov.shorty.short_url.entity.ShortUrl;
 import com.artemobrazumov.shorty.short_url.exceptions.NotShortUrlAuthorException;
 import com.artemobrazumov.shorty.short_url.exceptions.ShortUrlNotFoundException;
 import com.artemobrazumov.shorty.short_url.factory.ShortUrlStringGenerator;
+import com.artemobrazumov.shorty.short_url.repository.RedirectionRepository;
 import com.artemobrazumov.shorty.short_url.repository.ShortUrlRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 
 @Service
 public class ShortUrlService {
 
     private final ShortUrlRepository shortUrlRepository;
+    private final RedirectionRepository redirectionRepository;
     private final ShortUrlStringGenerator shortUrlStringGenerator;
 
-    public ShortUrlService(ShortUrlRepository shortUrlRepository, ShortUrlStringGenerator shortUrlStringGenerator) {
+    public ShortUrlService(ShortUrlRepository shortUrlRepository, RedirectionRepository redirectionRepository,
+                           ShortUrlStringGenerator shortUrlStringGenerator) {
         this.shortUrlRepository = shortUrlRepository;
+        this.redirectionRepository = redirectionRepository;
         this.shortUrlStringGenerator = shortUrlStringGenerator;
     }
 
@@ -51,6 +55,19 @@ public class ShortUrlService {
         Boolean isProtected = (shortUrl.getPassword() != null);
         return new ShortUrlDetailsDTO(shortUrl.getId(), shortUrl.getName(), shortUrl.getRealUrl(),
                 shortUrl.getShortUrl(), isProtected, shortUrl.getActive());
+    }
+
+    public RedirectionsDTO getShortUrlRedirections(TokenUser user, Long id) {
+        ShortUrl shortUrl = findShortUrlById(id);
+        if (!Objects.equals(shortUrl.getAuthor().getId(), user.getUserId())) {
+            throw new NotShortUrlAuthorException();
+        }
+        List<Redirection> redirectionEntities = redirectionRepository.findByShortUrlId(shortUrl.getId());
+        return new RedirectionsDTO(redirectionEntities
+                .stream()
+                .map(r -> new RedirectionResponseDTO(r.getId(), r.getRedirectionTime(), r.getStatus(),
+                        r.getCountry(), r.getIp(), r.getReferer()))
+                .toList());
     }
 
     public ShortUrl findShortUrlById(Long id) {
