@@ -22,6 +22,8 @@ public class ShortUrlConfigurer extends AbstractHttpConfigurer<ShortUrlConfigure
     public void init(HttpSecurity builder) throws Exception {
         builder.authorizeHttpRequests(authorizer -> {
             authorizer.requestMatchers("/urls/**").authenticated();
+            authorizer.requestMatchers("/r/**").permitAll();
+            authorizer.requestMatchers("/*/password**").permitAll();
         });
     }
 

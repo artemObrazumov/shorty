@@ -16,6 +16,6 @@ public record ShortUrlDTO(
         String url,
         @Size(max = 25, message = "Incorrect short url size")
         String shortUrl,
-        @Size(min = 6, max = 70, message = "Incorrect short url size")
+        @Size(min = 3, max = 70, message = "Incorrect password size")
         String password
 ) {}
