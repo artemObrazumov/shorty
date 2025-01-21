@@ -11,9 +11,12 @@ public class ShortUrl {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(targetEntity = UserEntity.class)
+    @ManyToOne(targetEntity = UserEntity.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "id_user", nullable = false)
     private UserEntity author;
+
+    @Column(name = "name", nullable = false)
+    private String name;
 
     @Column(name = "real_url", nullable = false)
     private String realUrl;
@@ -24,11 +27,15 @@ public class ShortUrl {
     @Column(name = "password")
     private String password;
 
+    @Column(name = "is_active", nullable = false)
+    private Boolean isActive = true;
+
     public ShortUrl() {
     }
 
-    public ShortUrl(Long id, UserEntity author, String realUrl, String shortUrl, String password) {
+    public ShortUrl(Long id, UserEntity author, String name, String realUrl, String shortUrl, String password) {
         this.id = id;
+        this.name = name;
         this.author = author;
         this.realUrl = realUrl;
         this.shortUrl = shortUrl;
@@ -49,6 +56,14 @@ public class ShortUrl {
 
     public void setAuthor(UserEntity author) {
         this.author = author;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getRealUrl() {
@@ -73,5 +88,13 @@ public class ShortUrl {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Boolean getActive() {
+        return isActive;
+    }
+
+    public void setActive(Boolean active) {
+        isActive = active;
     }
 }

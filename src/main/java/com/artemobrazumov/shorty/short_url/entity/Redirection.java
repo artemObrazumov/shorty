@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "redirection_logs")
+@Table(name = "redirections")
 public class Redirection {
 
     @Id

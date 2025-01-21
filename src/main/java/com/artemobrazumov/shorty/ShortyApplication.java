@@ -29,8 +29,10 @@ public class ShortyApplication {
 			UserAuthorityRepository userAuthorityRepository
 	) {
 		return args -> {
-			var user = userRepository.save(new UserEntity(null, "j.jameson", "{noop}password"));
-			userAuthorityRepository.save(new UserAuthority(null, user, "ROLE_MANAGER"));
+			if (userRepository.findById(1L).isEmpty()) {
+				var user = userRepository.save(new UserEntity(null, "j.jameson", "{noop}password"));
+				userAuthorityRepository.save(new UserAuthority(null, user, "ROLE_MANAGER"));
+			}
 		};
 	}
 }

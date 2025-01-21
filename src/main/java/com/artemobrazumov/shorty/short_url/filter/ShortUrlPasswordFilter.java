@@ -37,7 +37,7 @@ public class ShortUrlPasswordFilter extends OncePerRequestFilter {
         if (requestMatcher.matches(request)) {
             try {
                 String shortUrlString = extractShortUrlStringFromRequest(request);
-                ShortUrl shortUrl = shortUrlService.getShortUrl(shortUrlString);
+                ShortUrl shortUrl = shortUrlService.findShortUrlByShortUrlString(shortUrlString);
                 Redirection redirection = getRedirectionEntry(request, shortUrl);
 
                 String password = shortUrl.getPassword();

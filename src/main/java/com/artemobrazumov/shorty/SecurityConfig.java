@@ -23,8 +23,7 @@ public class SecurityConfig {
                 .sessionManagement(sessionManagement ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorizeHttpRequests ->
-                        authorizeHttpRequests
-                                .anyRequest().permitAll())
+                        authorizeHttpRequests.requestMatchers("/jwt").permitAll())
                 .build();
     }
 }
