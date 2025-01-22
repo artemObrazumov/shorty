@@ -12,7 +12,7 @@ public record ShortUrlDTO(
         @NotNull(message = "Real url is required")
         @NotBlank(message = "Real url should not be blank")
         @Size(max = 200, message = "Incorrect real url size")
-        //@Pattern(regexp = "^(http|https)://", message = "Invalid url pattern")
+        @Pattern(regexp = "^(http|https)://.*", message = "Invalid url pattern")
         String url,
         @Size(max = 25, message = "Incorrect short url size")
         String shortUrl,
