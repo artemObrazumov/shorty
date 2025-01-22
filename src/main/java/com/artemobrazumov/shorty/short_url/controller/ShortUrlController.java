@@ -26,8 +26,9 @@ public class ShortUrlController {
 
     @GetMapping("/{id}/redirections")
     public RedirectionsDTO getShortUrlRedirections(@AuthenticationPrincipal TokenUser user,
-                                                   @PathVariable("id") Long id) {
-        return shortUrlService.getShortUrlRedirections(user, id);
+                                                   @PathVariable("id") Long id,
+                                                   @RequestParam(value = "p", required = false, defaultValue = "1") Integer page) {
+        return shortUrlService.getShortUrlRedirections(user, id, page);
     }
 
     @PostMapping

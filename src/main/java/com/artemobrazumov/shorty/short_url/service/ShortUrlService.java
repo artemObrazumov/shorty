@@ -11,6 +11,9 @@ import com.artemobrazumov.shorty.short_url.exceptions.ShortUrlNotFoundException;
 import com.artemobrazumov.shorty.short_url.factory.ShortUrlStringGenerator;
 import com.artemobrazumov.shorty.short_url.repository.RedirectionRepository;
 import com.artemobrazumov.shorty.short_url.repository.ShortUrlRepository;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,6 +25,9 @@ public class ShortUrlService {
     private final ShortUrlRepository shortUrlRepository;
     private final RedirectionRepository redirectionRepository;
     private final ShortUrlStringGenerator shortUrlStringGenerator;
+
+    @Value("${short-url.redirection-logs.page-size}")
+    private Integer pageSize;
 
     public ShortUrlService(ShortUrlRepository shortUrlRepository, RedirectionRepository redirectionRepository,
                            ShortUrlStringGenerator shortUrlStringGenerator) {
@@ -57,12 +63,15 @@ public class ShortUrlService {
                 shortUrl.getShortUrl(), isProtected, shortUrl.getActive());
     }
 
-    public RedirectionsDTO getShortUrlRedirections(TokenUser user, Long id) {
+    public RedirectionsDTO getShortUrlRedirections(TokenUser user, Long id, Integer page) {
         ShortUrl shortUrl = findShortUrlById(id);
         if (!Objects.equals(shortUrl.getAuthor().getId(), user.getUserId())) {
             throw new NotShortUrlAuthorException();
         }
-        List<Redirection> redirectionEntities = redirectionRepository.findByShortUrlId(shortUrl.getId());
+        Pageable pageable = PageRequest.of(page-1, pageSize);
+        List<Redirection> redirectionEntities = redirectionRepository
+                .findByShortUrlId(shortUrl.getId(), pageable);
+
         return new RedirectionsDTO(redirectionEntities
                 .stream()
                 .map(r -> new RedirectionResponseDTO(r.getId(), r.getRedirectionTime(), r.getStatus(),
