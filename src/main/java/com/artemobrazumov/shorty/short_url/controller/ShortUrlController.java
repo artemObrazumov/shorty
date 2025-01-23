@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 
+import java.time.LocalDateTime;
+
 @RestController
 @RequestMapping("/urls")
 public class ShortUrlController {
@@ -19,16 +21,22 @@ public class ShortUrlController {
     }
 
     @GetMapping("/{id}")
-    public ShortUrlDetailsDTO getShortUrlDetails(@AuthenticationPrincipal TokenUser user,
-                                                 @PathVariable("id") Long id) {
+    public ShortUrlDetailsDTO getShortUrlDetails(@AuthenticationPrincipal TokenUser user, @PathVariable("id") Long id) {
         return shortUrlService.getShortUrlDetails(user, id);
     }
 
     @GetMapping("/{id}/redirections")
-    public RedirectionsDTO getShortUrlRedirections(@AuthenticationPrincipal TokenUser user,
-                                                   @PathVariable("id") Long id,
+    public RedirectionsDTO getShortUrlRedirections(@AuthenticationPrincipal TokenUser user, @PathVariable("id") Long id,
                                                    @RequestParam(value = "p", required = false, defaultValue = "1") Integer page) {
         return shortUrlService.getShortUrlRedirections(user, id, page);
+    }
+
+    @GetMapping("/{id}/stats/redirection_count")
+    public RedirectionsCountDTO getRedirectionsCountStats(@AuthenticationPrincipal TokenUser user,
+                                                          @PathVariable("id") Long id,
+                                                          @RequestParam("from") LocalDateTime from,
+                                                          @RequestParam("to") LocalDateTime to) {
+        return shortUrlService.getRedirectionsCountStats(user, id, from, to);
     }
 
     @PostMapping

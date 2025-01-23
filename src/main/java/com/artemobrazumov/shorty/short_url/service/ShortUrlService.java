@@ -16,6 +16,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -77,6 +79,26 @@ public class ShortUrlService {
                 .map(r -> new RedirectionResponseDTO(r.getId(), r.getRedirectionTime(), r.getStatus(),
                         r.getCountry(), r.getIp(), r.getReferer()))
                 .toList());
+    }
+
+    public RedirectionsCountDTO getRedirectionsCountStats(TokenUser user, Long id,
+                                                          LocalDateTime from, LocalDateTime to) {
+        ShortUrl shortUrl = findShortUrlById(id);
+        if (!Objects.equals(shortUrl.getAuthor().getId(), user.getUserId())) {
+            throw new NotShortUrlAuthorException();
+        }
+        GroupingMethod groupingMethod = GroupingMethod.BY_DAY;
+        if (Duration.between(from, to).toDays() > 14) {
+            groupingMethod = GroupingMethod.BY_MONTH;
+        }
+        var items = redirectionRepository.getRedirectionCountStats(id, groupingMethod.getInterval(),
+                groupingMethod.getDateTruncUnit(), from, to);
+        return new RedirectionsCountDTO(groupingMethod, items.stream()
+                .map(row ->
+                        new RedirectionsCountItemDTO(row.time().toLocalDateTime(), row.undefined(),
+                                row.wrongPassword(), row.successful()))
+                .toList()
+        );
     }
 
     public ShortUrl findShortUrlById(Long id) {
