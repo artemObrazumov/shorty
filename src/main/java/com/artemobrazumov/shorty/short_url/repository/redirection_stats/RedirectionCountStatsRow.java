@@ -1,4 +1,4 @@
-package com.artemobrazumov.shorty.short_url.repository;
+package com.artemobrazumov.shorty.short_url.repository.redirection_stats;
 
 import java.sql.Timestamp;
 

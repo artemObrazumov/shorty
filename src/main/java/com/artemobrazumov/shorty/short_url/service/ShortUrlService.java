@@ -3,6 +3,7 @@ package com.artemobrazumov.shorty.short_url.service;
 import com.artemObrazumov.token.entity.UserEntity;
 import com.artemObrazumov.token.user.TokenUser;
 import com.artemobrazumov.shorty.short_url.dto.*;
+import com.artemobrazumov.shorty.short_url.dto.redirection_stats.*;
 import com.artemobrazumov.shorty.short_url.entity.Redirection;
 import com.artemobrazumov.shorty.short_url.exceptions.DuplicateShortUrlException;
 import com.artemobrazumov.shorty.short_url.entity.ShortUrl;
@@ -81,8 +82,8 @@ public class ShortUrlService {
                 .toList());
     }
 
-    public RedirectionsCountDTO getRedirectionsCountStats(TokenUser user, Long id,
-                                                          LocalDateTime from, LocalDateTime to) {
+    public RedirectionCountDTO getRedirectionsCountStats(TokenUser user, Long id,
+                                                         LocalDateTime from, LocalDateTime to) {
         ShortUrl shortUrl = findShortUrlById(id);
         if (!Objects.equals(shortUrl.getAuthor().getId(), user.getUserId())) {
             throw new NotShortUrlAuthorException();
@@ -90,16 +91,16 @@ public class ShortUrlService {
         GroupingMethod groupingMethod = estimateGroupingMethod(from, to);
         var items = redirectionRepository.getRedirectionCountStats(id, groupingMethod.getInterval(),
                 groupingMethod.getDateTruncUnit(), from, to);
-        return new RedirectionsCountDTO(groupingMethod, items.stream()
+        return new RedirectionCountDTO(groupingMethod, items.stream()
                 .map(row ->
-                        new RedirectionsCountItemDTO(row.time().toLocalDateTime(), row.total(), row.undefined(),
+                        new RedirectionCountItemDTO(row.time().toLocalDateTime(), row.total(), row.undefined(),
                                 row.wrongPassword(), row.successful()))
                 .toList()
         );
     }
 
     public RedirectionCountriesDTO getRedirectionsCountriesStats(TokenUser user, Long id,
-                                                          LocalDateTime from, LocalDateTime to) {
+                                                                 LocalDateTime from, LocalDateTime to) {
         ShortUrl shortUrl = findShortUrlById(id);
         if (!Objects.equals(shortUrl.getAuthor().getId(), user.getUserId())) {
             throw new NotShortUrlAuthorException();
@@ -110,6 +111,22 @@ public class ShortUrlService {
         return new RedirectionCountriesDTO(items.stream()
                 .map(row ->
                         new RedirectionCountriesItemDTO(row.country(), row.count()))
+                .toList()
+        );
+    }
+
+    public RedirectionRefererDTO getRedirectionsRefererStats(TokenUser user, Long id,
+                                                               LocalDateTime from, LocalDateTime to) {
+        ShortUrl shortUrl = findShortUrlById(id);
+        if (!Objects.equals(shortUrl.getAuthor().getId(), user.getUserId())) {
+            throw new NotShortUrlAuthorException();
+        }
+        GroupingMethod groupingMethod = estimateGroupingMethod(from, to);
+        var items = redirectionRepository.getRedirectionReferersStats(id, groupingMethod.getDateTruncUnit(),
+                from, to);
+        return new RedirectionRefererDTO(items.stream()
+                .map(row ->
+                        new RedirectionRefererItemDTO(row.url(), row.count()))
                 .toList()
         );
     }

@@ -1,6 +1,9 @@
 package com.artemobrazumov.shorty.short_url.repository;
 
 import com.artemobrazumov.shorty.short_url.entity.Redirection;
+import com.artemobrazumov.shorty.short_url.repository.redirection_stats.RedirectionCountStatsRow;
+import com.artemobrazumov.shorty.short_url.repository.redirection_stats.RedirectionCountiesStatsRow;
+import com.artemobrazumov.shorty.short_url.repository.redirection_stats.RedirectionReferersStatsRow;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -32,12 +35,28 @@ public interface RedirectionRepository extends JpaRepository<Redirection, Long> 
     @Query(value = """
             SELECT r.country, CAST(COUNT(*) AS INTEGER)
             FROM redirections r
-            WHERE r.redirection_time >= DATE_TRUNC(:dateTrunc, CAST(:from AS TIMESTAMP)) AND
-            r.redirection_time <= DATE_TRUNC(:dateTrunc, CAST(:to AS TIMESTAMP))
+            WHERE r.short_url_id = :id
+            AND r.redirection_time >= DATE_TRUNC(:dateTrunc, CAST(:from AS TIMESTAMP))
+            AND r.redirection_time <= DATE_TRUNC(:dateTrunc, CAST(:to AS TIMESTAMP))
             GROUP BY r.country
             ORDER BY r.country;
             """,
             nativeQuery = true)
     List<RedirectionCountiesStatsRow> getRedirectionCountriesStats(Long id, String dateTrunc,
-                                                            LocalDateTime from, LocalDateTime to);
+                                                                   LocalDateTime from, LocalDateTime to);
+
+    @Query(value = """
+            SELECT
+            regexp_replace(r.referer, '^(https?:\\/\\/([^\\s\\/]+)\\.([^\\s\\/]+)).*', '\\1') AS url,
+            CAST(COUNT(*) AS INTEGER) AS count
+            FROM redirections r
+            WHERE r.referer IS NOT NULL
+            AND r.short_url_id = :id
+            AND r.redirection_time >= DATE_TRUNC(:dateTrunc, CAST(:from AS TIMESTAMP))
+            AND r.redirection_time <= DATE_TRUNC(:dateTrunc, CAST(:to AS TIMESTAMP))
+            GROUP BY url;
+            """,
+        nativeQuery = true)
+    List<RedirectionReferersStatsRow> getRedirectionReferersStats(Long id, String dateTrunc,
+                                                                  LocalDateTime from, LocalDateTime to);
 }
