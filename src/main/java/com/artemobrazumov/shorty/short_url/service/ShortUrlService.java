@@ -87,16 +87,29 @@ public class ShortUrlService {
         if (!Objects.equals(shortUrl.getAuthor().getId(), user.getUserId())) {
             throw new NotShortUrlAuthorException();
         }
-        GroupingMethod groupingMethod = GroupingMethod.BY_DAY;
-        if (Duration.between(from, to).toDays() > 14) {
-            groupingMethod = GroupingMethod.BY_MONTH;
-        }
+        GroupingMethod groupingMethod = estimateGroupingMethod(from, to);
         var items = redirectionRepository.getRedirectionCountStats(id, groupingMethod.getInterval(),
                 groupingMethod.getDateTruncUnit(), from, to);
         return new RedirectionsCountDTO(groupingMethod, items.stream()
                 .map(row ->
-                        new RedirectionsCountItemDTO(row.time().toLocalDateTime(), row.undefined(),
+                        new RedirectionsCountItemDTO(row.time().toLocalDateTime(), row.total(), row.undefined(),
                                 row.wrongPassword(), row.successful()))
+                .toList()
+        );
+    }
+
+    public RedirectionCountriesDTO getRedirectionsCountriesStats(TokenUser user, Long id,
+                                                          LocalDateTime from, LocalDateTime to) {
+        ShortUrl shortUrl = findShortUrlById(id);
+        if (!Objects.equals(shortUrl.getAuthor().getId(), user.getUserId())) {
+            throw new NotShortUrlAuthorException();
+        }
+        GroupingMethod groupingMethod = estimateGroupingMethod(from, to);
+        var items = redirectionRepository.getRedirectionCountriesStats(id, groupingMethod.getDateTruncUnit(),
+                from, to);
+        return new RedirectionCountriesDTO(items.stream()
+                .map(row ->
+                        new RedirectionCountriesItemDTO(row.country(), row.count()))
                 .toList()
         );
     }
@@ -109,5 +122,13 @@ public class ShortUrlService {
     public ShortUrl findShortUrlByShortUrlString(String shortUrlString) {
         return shortUrlRepository.findByShortUrl(shortUrlString).orElseThrow(() ->
                 new ShortUrlNotFoundException(shortUrlString));
+    }
+
+    private GroupingMethod estimateGroupingMethod(LocalDateTime from, LocalDateTime to) {
+        GroupingMethod groupingMethod = GroupingMethod.BY_DAY;
+        if (Duration.between(from, to).toDays() >= 30) {
+            groupingMethod = GroupingMethod.BY_MONTH;
+        }
+        return groupingMethod;
     }
 }

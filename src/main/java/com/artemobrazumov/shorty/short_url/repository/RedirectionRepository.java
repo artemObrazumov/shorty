@@ -1,16 +1,11 @@
 package com.artemobrazumov.shorty.short_url.repository;
 
-import com.artemobrazumov.shorty.short_url.dto.GroupingMethod;
 import com.artemobrazumov.shorty.short_url.entity.Redirection;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Period;
-import java.util.Date;
 import java.util.List;
 
 public interface RedirectionRepository extends JpaRepository<Redirection, Long> {
@@ -21,6 +16,7 @@ public interface RedirectionRepository extends JpaRepository<Redirection, Long> 
     @Query(value = """
             SELECT
             CAST(time AS TIMESTAMP),
+            CAST(COUNT(CASE WHEN r.id IS NOT NULL THEN 1 END) AS INTEGER) AS total,
             CAST(COUNT(CASE WHEN (r.id IS NOT NULL AND r.status = 0) THEN 1 END) AS INTEGER) AS undefined,
             CAST(COUNT(CASE WHEN (r.id IS NOT NULL AND r.status = 1) THEN 1 END) AS INTEGER) AS successful,
             CAST(COUNT(CASE WHEN (r.id IS NOT NULL AND r.status = 2) THEN 1 END) AS INTEGER) AS wrongPassword
@@ -31,5 +27,17 @@ public interface RedirectionRepository extends JpaRepository<Redirection, Long> 
             """,
             nativeQuery = true)
     List<RedirectionCountStatsRow> getRedirectionCountStats(Long id, String interval, String dateTrunc,
+                                                            LocalDateTime from, LocalDateTime to);
+
+    @Query(value = """
+            SELECT r.country, CAST(COUNT(*) AS INTEGER)
+            FROM redirections r
+            WHERE r.redirection_time >= DATE_TRUNC(:dateTrunc, CAST(:from AS TIMESTAMP)) AND
+            r.redirection_time <= DATE_TRUNC(:dateTrunc, CAST(:to AS TIMESTAMP))
+            GROUP BY r.country
+            ORDER BY r.country;
+            """,
+            nativeQuery = true)
+    List<RedirectionCountiesStatsRow> getRedirectionCountriesStats(Long id, String dateTrunc,
                                                             LocalDateTime from, LocalDateTime to);
 }

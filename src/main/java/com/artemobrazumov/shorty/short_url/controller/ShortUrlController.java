@@ -39,6 +39,14 @@ public class ShortUrlController {
         return shortUrlService.getRedirectionsCountStats(user, id, from, to);
     }
 
+    @GetMapping("/{id}/stats/redirection_countries")
+    public RedirectionCountriesDTO getRedirectionsCountriesStats(@AuthenticationPrincipal TokenUser user,
+                                                          @PathVariable("id") Long id,
+                                                          @RequestParam("from") LocalDateTime from,
+                                                          @RequestParam("to") LocalDateTime to) {
+        return shortUrlService.getRedirectionsCountriesStats(user, id, from, to);
+    }
+
     @PostMapping
     public ShortUrlResponseDTO createShortUrl(@AuthenticationPrincipal TokenUser user,
                                               @RequestBody @Valid ShortUrlDTO shortUrlDTO) {
