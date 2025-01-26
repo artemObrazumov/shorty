@@ -35,7 +35,8 @@ public interface RedirectionRepository extends JpaRepository<Redirection, Long> 
     @Query(value = """
             SELECT r.country, CAST(COUNT(*) AS INTEGER)
             FROM redirections r
-            WHERE r.short_url_id = :id
+            WHERE r.country IS NOT NULL
+            AND r.short_url_id = :id
             AND r.redirection_time >= DATE_TRUNC(:dateTrunc, CAST(:from AS TIMESTAMP))
             AND r.redirection_time <= DATE_TRUNC(:dateTrunc, CAST(:to AS TIMESTAMP))
             GROUP BY r.country

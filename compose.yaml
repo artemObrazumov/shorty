@@ -1,9 +1,0 @@
-services:
-  db:
-    image: postgres:15
-    environment:
-      POSTGRES_DB: shorty
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: pass
-    ports:
-      - "55432:5432"

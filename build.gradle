@@ -44,3 +44,10 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+tasks.jar {
+	manifest {
+		archiveFileName.set("shorty.jar")
+		attributes('Main-Class': 'com.artemobrazumov.shorty.ShortyApplication')
+	}
+}
