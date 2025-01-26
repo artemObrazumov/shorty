@@ -1,5 +1,7 @@
 package com.artemobrazumov.shorty.short_url.filter;
 
+import com.artemobrazumov.shorty.ip_info.dto.IpInfoDTO;
+import com.artemobrazumov.shorty.ip_info.service.IpInfoService;
 import com.artemobrazumov.shorty.short_url.dto.RedirectionDTO;
 import com.artemobrazumov.shorty.short_url.entity.Redirection;
 import com.artemobrazumov.shorty.short_url.entity.RedirectionStatus;
@@ -25,10 +27,12 @@ public class ShortUrlPasswordFilter extends OncePerRequestFilter {
 
     private final ShortUrlService shortUrlService;
     private final RedirectionService redirectionService;
+    private final IpInfoService ipInfoService;
 
-    public ShortUrlPasswordFilter(ShortUrlService shortUrlService, RedirectionService redirectionService) {
+    public ShortUrlPasswordFilter(ShortUrlService shortUrlService, RedirectionService redirectionService, IpInfoService ipInfoService) {
         this.shortUrlService = shortUrlService;
         this.redirectionService = redirectionService;
+        this.ipInfoService = ipInfoService;
     }
 
     @Override
@@ -92,11 +96,13 @@ public class ShortUrlPasswordFilter extends OncePerRequestFilter {
 
     private RedirectionDTO generateRedirectionDTO(HttpServletRequest request, ShortUrl shortUrl) {
         String referer = request.getHeader("Referer");
+        String ip = request.getRemoteAddr();
+        IpInfoDTO ipInfo = ipInfoService.getIpInfo(ip);
         return new RedirectionDTO(
                 LocalDateTime.now(),
                 shortUrl,
-                null,
-                request.getRemoteAddr(),
+                ipInfo != null ? ipInfo.countryCode() : null,
+                ip,
                 referer
         );
     }

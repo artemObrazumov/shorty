@@ -1,5 +1,7 @@
 package com.artemobrazumov.shorty.short_url;
 
+import com.artemobrazumov.shorty.ip_info.dto.IpInfoDTO;
+import com.artemobrazumov.shorty.ip_info.service.IpInfoService;
 import com.artemobrazumov.shorty.short_url.filter.ShortUrlPasswordFilter;
 import com.artemobrazumov.shorty.short_url.service.RedirectionService;
 import com.artemobrazumov.shorty.short_url.service.ShortUrlService;
@@ -11,10 +13,12 @@ public class ShortUrlConfigurer extends AbstractHttpConfigurer<ShortUrlConfigure
 
     private final ShortUrlService shortUrlService;
     private final RedirectionService redirectionService;
+    private final IpInfoService ipInfoService;
 
-    public ShortUrlConfigurer(ShortUrlService shortUrlService, RedirectionService redirectionService) {
+    public ShortUrlConfigurer(ShortUrlService shortUrlService, RedirectionService redirectionService, IpInfoService ipInfoService) {
         this.shortUrlService = shortUrlService;
         this.redirectionService = redirectionService;
+        this.ipInfoService = ipInfoService;
     }
 
     @Override
@@ -29,7 +33,7 @@ public class ShortUrlConfigurer extends AbstractHttpConfigurer<ShortUrlConfigure
 
     @Override
     public void configure(HttpSecurity builder) {
-        var shortUrlPasswordFilter = new ShortUrlPasswordFilter(shortUrlService, redirectionService);
+        var shortUrlPasswordFilter = new ShortUrlPasswordFilter(shortUrlService, redirectionService, ipInfoService);
         builder.addFilterAfter(shortUrlPasswordFilter, CsrfFilter.class);
     }
 }

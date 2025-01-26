@@ -1,5 +1,6 @@
 package com.artemobrazumov.shorty.short_url;
 
+import com.artemobrazumov.shorty.ip_info.service.IpInfoService;
 import com.artemobrazumov.shorty.short_url.factory.ShortUrlStringGenerator;
 import com.artemobrazumov.shorty.short_url.service.RedirectionService;
 import com.artemobrazumov.shorty.short_url.service.ShortUrlService;
@@ -22,8 +23,8 @@ public class ShortUrlConfig {
 
     @Bean
     public ShortUrlConfigurer shortUrlConfigurer(
-            ShortUrlService shortUrlService, RedirectionService redirectionService
+            ShortUrlService shortUrlService, RedirectionService redirectionService, IpInfoService ipInfoService
     ) {
-        return new ShortUrlConfigurer(shortUrlService, redirectionService);
+        return new ShortUrlConfigurer(shortUrlService, redirectionService, ipInfoService);
     }
 }
