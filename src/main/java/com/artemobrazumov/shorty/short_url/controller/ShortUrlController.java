@@ -6,6 +6,7 @@ import com.artemobrazumov.shorty.short_url.dto.redirection_stats.RedirectionCoun
 import com.artemobrazumov.shorty.short_url.dto.redirection_stats.RedirectionCountDTO;
 import com.artemobrazumov.shorty.short_url.dto.redirection_stats.RedirectionRefererDTO;
 import com.artemobrazumov.shorty.short_url.service.ShortUrlService;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -71,5 +72,19 @@ public class ShortUrlController {
     public ShortUrlResponseDTO createShortUrl(@AuthenticationPrincipal TokenUser user,
                                               @RequestBody @Valid ShortUrlDTO shortUrlDTO) {
         return shortUrlService.createShortUrl(user.getUserId(), shortUrlDTO);
+    }
+
+    @PreAuthorize("hasPermission(#id, 'ShortUrl', 'update')")
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateShortUrl(@PathVariable("id") Long id, @RequestBody @Valid ShortUrlUpdateDTO shortUrlUpdateDTO) {
+        shortUrlService.updateShortUrl(id, shortUrlUpdateDTO);
+    }
+
+    @PreAuthorize("hasPermission(#id, 'ShortUrl', 'delete')")
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteShortUrl(@PathVariable("id") Long id) {
+        shortUrlService.deleteShortUrl(id);
     }
 }

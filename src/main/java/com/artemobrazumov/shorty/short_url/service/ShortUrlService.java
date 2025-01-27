@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public class ShortUrlService {
@@ -127,6 +126,15 @@ public class ShortUrlService {
                 .toList());
     }
 
+    public void updateShortUrl(Long id, ShortUrlUpdateDTO shortUrlUpdateDTO) {
+        ShortUrl shortUrl = findShortUrlById(id);
+        shortUrl.setName(shortUrlUpdateDTO.name());
+        shortUrlRepository.save(shortUrl);
+    }
+
+    public void deleteShortUrl(Long id) {
+        shortUrlRepository.deleteById(id);
+    }
 
 
     public ShortUrl findShortUrlById(Long id) {
