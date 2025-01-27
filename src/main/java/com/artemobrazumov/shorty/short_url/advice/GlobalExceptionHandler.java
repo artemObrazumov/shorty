@@ -1,19 +1,17 @@
 package com.artemobrazumov.shorty.short_url.advice;
 
+import com.artemobrazumov.shorty.short_url.exceptions.DuplicateShortUrlException;
 import com.artemobrazumov.shorty.short_url.exceptions.NotShortUrlAuthorException;
 import com.artemobrazumov.shorty.short_url.exceptions.ShortUrlNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.util.HashMap;
@@ -41,6 +39,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ShortUrlNotFoundException.class)
     public ResponseEntity<String> handleShortUrlNotFoundException(ShortUrlNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(DuplicateShortUrlException.class)
+    public ResponseEntity<String> handleDuplicateShortUrlException(DuplicateShortUrlException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
     }
 
     @ExceptionHandler(NotShortUrlAuthorException.class)

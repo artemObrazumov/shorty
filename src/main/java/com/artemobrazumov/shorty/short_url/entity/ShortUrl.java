@@ -3,6 +3,8 @@ package com.artemobrazumov.shorty.short_url.entity;
 import com.artemObrazumov.token.entity.UserEntity;
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "short_url")
 public class ShortUrl {
@@ -30,16 +32,25 @@ public class ShortUrl {
     @Column(name = "is_active", nullable = false)
     private Boolean isActive = true;
 
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
+
+    @Column(name = "edited_at")
+    private LocalDateTime editedAt;
+
     public ShortUrl() {
     }
 
-    public ShortUrl(Long id, UserEntity author, String name, String realUrl, String shortUrl, String password) {
+    public ShortUrl(Long id, UserEntity author, String name, String realUrl, String shortUrl, String password,
+                    LocalDateTime createdAt, LocalDateTime editedAt) {
         this.id = id;
         this.name = name;
         this.author = author;
         this.realUrl = realUrl;
         this.shortUrl = shortUrl;
         this.password = password;
+        this.createdAt = createdAt;
+        this.editedAt = editedAt;
     }
 
     public Long getId() {
@@ -96,5 +107,21 @@ public class ShortUrl {
 
     public void setActive(Boolean active) {
         isActive = active;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getEditedAt() {
+        return editedAt;
+    }
+
+    public void setEditedAt(LocalDateTime editedAt) {
+        this.editedAt = editedAt;
     }
 }

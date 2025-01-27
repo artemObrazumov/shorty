@@ -61,4 +61,12 @@ public interface RedirectionRepository extends JpaRepository<Redirection, Long> 
         nativeQuery = true)
     List<RedirectionReferersStatsRow> getRedirectionReferersStats(Long id, String dateTrunc,
                                                                   LocalDateTime from, LocalDateTime to);
+
+    @Query(value = """
+            SELECT CAST(COUNT(*) AS INTEGER)
+            FROM redirections r
+            WHERE r.short_url_id = :id;
+            """,
+        nativeQuery = true)
+    Integer getRedirectionsOfShortUrlCount(Long id);
 }

@@ -30,7 +30,10 @@ public class ShortUrlService {
     private final ShortUrlStringGenerator shortUrlStringGenerator;
 
     @Value("${short-url.redirection-logs.page-size}")
-    private Integer pageSize;
+    private Integer redirectionPageSize;
+
+    @Value("${short-url.urls-list.page-size}")
+    private Integer shortUrlsPageSize;
 
     public ShortUrlService(ShortUrlRepository shortUrlRepository, RedirectionRepository redirectionRepository,
                            ShortUrlStringGenerator shortUrlStringGenerator) {
@@ -50,10 +53,10 @@ public class ShortUrlService {
             throw new DuplicateShortUrlException(shortUrlString);
         }
         ShortUrl shortUrl = new ShortUrl(null, new UserEntity(userId), shortUrlDTO.name(), shortUrlDTO.url(),
-                shortUrlString, shortUrlDTO.password());
+                shortUrlString, shortUrlDTO.password(), LocalDateTime.now(), null);
         shortUrl = shortUrlRepository.save(shortUrl);
         return new ShortUrlResponseDTO(shortUrl.getId(), shortUrl.getName(), shortUrl.getRealUrl(),
-                shortUrl.getShortUrl());
+                shortUrl.getShortUrl(), shortUrl.getCreatedAt(), shortUrl.getEditedAt(), 0);
     }
 
     public ShortUrlDetailsDTO getShortUrlDetails(TokenUser user, Long id) {
@@ -71,7 +74,7 @@ public class ShortUrlService {
         if (!Objects.equals(shortUrl.getAuthor().getId(), user.getUserId())) {
             throw new NotShortUrlAuthorException();
         }
-        Pageable pageable = PageRequest.of(page-1, pageSize);
+        Pageable pageable = PageRequest.of(page-1, redirectionPageSize);
         List<Redirection> redirectionEntities = redirectionRepository
                 .findByShortUrlId(shortUrl.getId(), pageable);
 
@@ -131,6 +134,20 @@ public class ShortUrlService {
         );
     }
 
+    public ShortUrlListDTO getUserShortUrls(TokenUser user, Integer page) {
+        Pageable pageable = PageRequest.of(page-1, shortUrlsPageSize);
+        List<ShortUrl> urls = shortUrlRepository.findByAuthorId(user.getUserId(), pageable);
+        return new ShortUrlListDTO(urls.stream()
+                .map(url -> {
+                    Integer redirections = redirectionRepository.getRedirectionsOfShortUrlCount(url.getId());
+                    return new ShortUrlResponseDTO(url.getId(), url.getName(), url.getRealUrl(),
+                            url.getShortUrl(), url.getCreatedAt(), url.getEditedAt(), redirections);
+                })
+                .toList());
+    }
+
+
+
     public ShortUrl findShortUrlById(Long id) {
         return shortUrlRepository.findById(id).orElseThrow(() ->
                 new ShortUrlNotFoundException(id));
@@ -147,5 +164,9 @@ public class ShortUrlService {
             groupingMethod = GroupingMethod.BY_MONTH;
         }
         return groupingMethod;
+    }
+
+    public Integer getRedirectionsOfShortUrlCount(Long id) {
+        return redirectionRepository.getRedirectionsOfShortUrlCount(id);
     }
 }

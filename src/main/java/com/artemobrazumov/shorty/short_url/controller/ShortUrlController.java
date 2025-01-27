@@ -23,6 +23,12 @@ public class ShortUrlController {
         this.shortUrlService = shortUrlService;
     }
 
+    @GetMapping
+    public ShortUrlListDTO getShortUrlsOfUser(@AuthenticationPrincipal TokenUser user,
+                                              @RequestParam(value = "p", required = false, defaultValue = "1") Integer page) {
+        return shortUrlService.getUserShortUrls(user, page);
+    }
+
     @GetMapping("/{id}")
     public ShortUrlDetailsDTO getShortUrlDetails(@AuthenticationPrincipal TokenUser user, @PathVariable("id") Long id) {
         return shortUrlService.getShortUrlDetails(user, id);
