@@ -7,7 +7,6 @@ import com.artemobrazumov.shorty.short_url.dto.redirection_stats.*;
 import com.artemobrazumov.shorty.short_url.entity.Redirection;
 import com.artemobrazumov.shorty.short_url.exceptions.DuplicateShortUrlException;
 import com.artemobrazumov.shorty.short_url.entity.ShortUrl;
-import com.artemobrazumov.shorty.short_url.exceptions.NotShortUrlAuthorException;
 import com.artemobrazumov.shorty.short_url.exceptions.ShortUrlNotFoundException;
 import com.artemobrazumov.shorty.short_url.factory.ShortUrlStringGenerator;
 import com.artemobrazumov.shorty.short_url.repository.RedirectionRepository;
@@ -59,21 +58,15 @@ public class ShortUrlService {
                 shortUrl.getShortUrl(), shortUrl.getCreatedAt(), shortUrl.getEditedAt(), 0);
     }
 
-    public ShortUrlDetailsDTO getShortUrlDetails(TokenUser user, Long id) {
+    public ShortUrlDetailsDTO getShortUrlDetails(Long id) {
         ShortUrl shortUrl = findShortUrlById(id);
-        if (!Objects.equals(shortUrl.getAuthor().getId(), user.getUserId())) {
-            throw new NotShortUrlAuthorException();
-        }
         Boolean isProtected = (shortUrl.getPassword() != null);
         return new ShortUrlDetailsDTO(shortUrl.getId(), shortUrl.getName(), shortUrl.getRealUrl(),
                 shortUrl.getShortUrl(), isProtected, shortUrl.getActive());
     }
 
-    public RedirectionsDTO getShortUrlRedirections(TokenUser user, Long id, Integer page) {
+    public RedirectionsDTO getShortUrlRedirections(Long id, Integer page) {
         ShortUrl shortUrl = findShortUrlById(id);
-        if (!Objects.equals(shortUrl.getAuthor().getId(), user.getUserId())) {
-            throw new NotShortUrlAuthorException();
-        }
         Pageable pageable = PageRequest.of(page-1, redirectionPageSize);
         List<Redirection> redirectionEntities = redirectionRepository
                 .findByShortUrlId(shortUrl.getId(), pageable);
@@ -85,12 +78,8 @@ public class ShortUrlService {
                 .toList());
     }
 
-    public RedirectionCountDTO getRedirectionsCountStats(TokenUser user, Long id,
+    public RedirectionCountDTO getRedirectionsCountStats(Long id,
                                                          LocalDateTime from, LocalDateTime to) {
-        ShortUrl shortUrl = findShortUrlById(id);
-        if (!Objects.equals(shortUrl.getAuthor().getId(), user.getUserId())) {
-            throw new NotShortUrlAuthorException();
-        }
         GroupingMethod groupingMethod = estimateGroupingMethod(from, to);
         var items = redirectionRepository.getRedirectionCountStats(id, groupingMethod.getInterval(),
                 groupingMethod.getDateTruncUnit(), from, to);
@@ -102,12 +91,8 @@ public class ShortUrlService {
         );
     }
 
-    public RedirectionCountriesDTO getRedirectionsCountriesStats(TokenUser user, Long id,
+    public RedirectionCountriesDTO getRedirectionsCountriesStats(Long id,
                                                                  LocalDateTime from, LocalDateTime to) {
-        ShortUrl shortUrl = findShortUrlById(id);
-        if (!Objects.equals(shortUrl.getAuthor().getId(), user.getUserId())) {
-            throw new NotShortUrlAuthorException();
-        }
         GroupingMethod groupingMethod = estimateGroupingMethod(from, to);
         var items = redirectionRepository.getRedirectionCountriesStats(id, groupingMethod.getDateTruncUnit(),
                 from, to);
@@ -118,12 +103,8 @@ public class ShortUrlService {
         );
     }
 
-    public RedirectionRefererDTO getRedirectionsRefererStats(TokenUser user, Long id,
-                                                               LocalDateTime from, LocalDateTime to) {
-        ShortUrl shortUrl = findShortUrlById(id);
-        if (!Objects.equals(shortUrl.getAuthor().getId(), user.getUserId())) {
-            throw new NotShortUrlAuthorException();
-        }
+    public RedirectionRefererDTO getRedirectionsRefererStats(Long id,
+                                                             LocalDateTime from, LocalDateTime to) {
         GroupingMethod groupingMethod = estimateGroupingMethod(from, to);
         var items = redirectionRepository.getRedirectionReferersStats(id, groupingMethod.getDateTruncUnit(),
                 from, to);

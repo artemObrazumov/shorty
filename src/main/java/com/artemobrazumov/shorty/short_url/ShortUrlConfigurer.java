@@ -1,11 +1,9 @@
 package com.artemobrazumov.shorty.short_url;
 
-import com.artemobrazumov.shorty.ip_info.dto.IpInfoDTO;
 import com.artemobrazumov.shorty.ip_info.service.IpInfoService;
 import com.artemobrazumov.shorty.short_url.filter.ShortUrlPasswordFilter;
 import com.artemobrazumov.shorty.short_url.service.RedirectionService;
 import com.artemobrazumov.shorty.short_url.service.ShortUrlService;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.csrf.CsrfFilter;

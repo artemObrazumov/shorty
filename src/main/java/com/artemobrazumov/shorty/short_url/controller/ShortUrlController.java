@@ -6,6 +6,7 @@ import com.artemobrazumov.shorty.short_url.dto.redirection_stats.RedirectionCoun
 import com.artemobrazumov.shorty.short_url.dto.redirection_stats.RedirectionCountDTO;
 import com.artemobrazumov.shorty.short_url.dto.redirection_stats.RedirectionRefererDTO;
 import com.artemobrazumov.shorty.short_url.service.ShortUrlService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,39 +30,41 @@ public class ShortUrlController {
         return shortUrlService.getUserShortUrls(user, page);
     }
 
+    @PreAuthorize("hasPermission(#id, 'ShortUrl', 'view_details')")
     @GetMapping("/{id}")
-    public ShortUrlDetailsDTO getShortUrlDetails(@AuthenticationPrincipal TokenUser user, @PathVariable("id") Long id) {
-        return shortUrlService.getShortUrlDetails(user, id);
+    public ShortUrlDetailsDTO getShortUrlDetails(@PathVariable("id") Long id) {
+        return shortUrlService.getShortUrlDetails(id);
     }
 
+    @PreAuthorize("hasPermission(#id, 'ShortUrl', 'view_stats')")
     @GetMapping("/{id}/redirections")
-    public RedirectionsDTO getShortUrlRedirections(@AuthenticationPrincipal TokenUser user, @PathVariable("id") Long id,
+    public RedirectionsDTO getShortUrlRedirections(@PathVariable("id") Long id,
                                                    @RequestParam(value = "p", required = false, defaultValue = "1") Integer page) {
-        return shortUrlService.getShortUrlRedirections(user, id, page);
+        return shortUrlService.getShortUrlRedirections(id, page);
     }
 
+    @PreAuthorize("hasPermission(#id, 'ShortUrl', 'view_stats')")
     @GetMapping("/{id}/stats/redirection_count")
-    public RedirectionCountDTO getRedirectionsCountStats(@AuthenticationPrincipal TokenUser user,
-                                                         @PathVariable("id") Long id,
+    public RedirectionCountDTO getRedirectionsCountStats(@PathVariable("id") Long id,
                                                          @RequestParam("from") LocalDateTime from,
                                                          @RequestParam("to") LocalDateTime to) {
-        return shortUrlService.getRedirectionsCountStats(user, id, from, to);
+        return shortUrlService.getRedirectionsCountStats(id, from, to);
     }
 
+    @PreAuthorize("hasPermission(#id, 'ShortUrl', 'view_stats')")
     @GetMapping("/{id}/stats/redirection_countries")
-    public RedirectionCountriesDTO getRedirectionsCountriesStats(@AuthenticationPrincipal TokenUser user,
-                                                                 @PathVariable("id") Long id,
+    public RedirectionCountriesDTO getRedirectionsCountriesStats(@PathVariable("id") Long id,
                                                                  @RequestParam("from") LocalDateTime from,
                                                                  @RequestParam("to") LocalDateTime to) {
-        return shortUrlService.getRedirectionsCountriesStats(user, id, from, to);
+        return shortUrlService.getRedirectionsCountriesStats(id, from, to);
     }
 
+    @PreAuthorize("hasPermission(#id, 'ShortUrl', 'view_stats')")
     @GetMapping("/{id}/stats/redirection_referer")
-    public RedirectionRefererDTO getRedirectionsRefererStats(@AuthenticationPrincipal TokenUser user,
-                                                             @PathVariable("id") Long id,
+    public RedirectionRefererDTO getRedirectionsRefererStats(@PathVariable("id") Long id,
                                                              @RequestParam("from") LocalDateTime from,
                                                              @RequestParam("to") LocalDateTime to) {
-        return shortUrlService.getRedirectionsRefererStats(user, id, from, to);
+        return shortUrlService.getRedirectionsRefererStats(id, from, to);
     }
 
     @PostMapping
