@@ -1,12 +1,12 @@
 services:
-  postgres:
+  db:
     image: postgres:15
     environment:
-      POSTGRES_DB: "db"
-      POSTGRES_USER: "admin"
-      POSTGRES_PASSWORD: "pass"
+      POSTGRES_DB: db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: pass
     ports:
-      - "5432:5432"
+      - "55432:5432"
 
   app:
     build:
@@ -20,4 +20,4 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - postgres
+      - db

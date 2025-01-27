@@ -33,14 +33,14 @@ public interface RedirectionRepository extends JpaRepository<Redirection, Long> 
                                                             LocalDateTime from, LocalDateTime to);
 
     @Query(value = """
-            SELECT r.country, CAST(COUNT(*) AS INTEGER)
+            SELECT r.country, CAST(COUNT(*) AS INTEGER) AS count
             FROM redirections r
             WHERE r.country IS NOT NULL
             AND r.short_url_id = :id
             AND r.redirection_time >= DATE_TRUNC(:dateTrunc, CAST(:from AS TIMESTAMP))
             AND r.redirection_time <= DATE_TRUNC(:dateTrunc, CAST(:to AS TIMESTAMP))
             GROUP BY r.country
-            ORDER BY r.country;
+            ORDER BY count DESC;
             """,
             nativeQuery = true)
     List<RedirectionCountiesStatsRow> getRedirectionCountriesStats(Long id, String dateTrunc,
@@ -55,7 +55,8 @@ public interface RedirectionRepository extends JpaRepository<Redirection, Long> 
             AND r.short_url_id = :id
             AND r.redirection_time >= DATE_TRUNC(:dateTrunc, CAST(:from AS TIMESTAMP))
             AND r.redirection_time <= DATE_TRUNC(:dateTrunc, CAST(:to AS TIMESTAMP))
-            GROUP BY url;
+            GROUP BY url
+            ORDER by count DESC;
             """,
         nativeQuery = true)
     List<RedirectionReferersStatsRow> getRedirectionReferersStats(Long id, String dateTrunc,
